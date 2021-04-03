@@ -273,6 +273,7 @@ export default function PlayField() {
                 onClick={selectedCards.length !== 0 ? () => addToField() : null}
                 marginBottom="2rem"
                 variant="outline"
+                color="white"
               >
                 札を場に展開
               </Button>
@@ -282,11 +283,12 @@ export default function PlayField() {
                   size="lg"
                   variant="outline"
                   onClick={() => setSelectedCards([])}
+                  color="white"
                 >
                   選択をリセット
                 </Button>
               )}
-              <Button size="lg" variant="outline" onClick={() => {
+              <Button size="lg" variant="outline" color="white" onClick={() => {
                 setOverlayID("setOppoCards")
                 onOpen()
               }}>
