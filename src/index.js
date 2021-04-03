@@ -4,11 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ColorModeScript } from "@chakra-ui/react"
-import theme from "./them"
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ColorModeScript initialColorMode={"dark"} />
     <App />
   </React.StrictMode>,
   document.getElementById('root')
