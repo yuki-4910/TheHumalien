@@ -32,7 +32,6 @@ export const CardContex = createContext({
 export default function PlayField() {
   // Initialize cards for deck, field, and hand
   useEffect(() => {
-    toggleColorMode()
     let counter = 0;
     const copy_allCard = [...allCards];
     var stackCardsAll = [];
@@ -149,10 +148,14 @@ export default function PlayField() {
 
   // console log area
   //
+  if (colorMode === 'light') {
+    toggleColorMode()
+  }
 
   return (
     <CardContex.Provider value={{ addToOtherDeck, addToField }}>
-      <Box height="full" background="#100e14">
+      {/* <Box height="full" background="#100e14"> */}
+      <Box height="full">
         <Stack h="100vh">
           <Flex justifyContent="center" mt={5} mb={5}>
             {stackCardsList.map((stacks, p_index) => (
