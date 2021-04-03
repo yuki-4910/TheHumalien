@@ -59,7 +59,7 @@ export default function PlayField() {
   const [selectedCards, setSelectedCards] = useState([]); // selected cards before putting to field
   const [cardsonField, setCardsonField] = useState([]); // current cards on field
   const [movedCards, setMovedCards] = useState([]); //cards which have been moved
-  const [overlayID, setOverlayID] = useState("")
+  const [overlayID, setOverlayID] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // ↓ chunck a myArray into chunk_size
@@ -219,20 +219,21 @@ export default function PlayField() {
                     </MenuButton>
                     <MenuList>
                       <MenuItem>
-                        <Heading size="md" onClick={() => {
-                          setOverlayID("hintOverlay")
-                          onOpen()
-                        }}>
+                        <Heading
+                          size="md"
+                          onClick={() => {
+                            setOverlayID('hintOverlay');
+                            onOpen();
+                          }}
+                        >
                           😎 ヒント
                         </Heading>
                       </MenuItem>
                       <MenuItem>
-                        <Heading size="md">
-                          相手がパス
-                        </Heading>
+                        <Heading size="md">相手がパス</Heading>
                       </MenuItem>
                       <MenuItem>
-                        <Heading size="md" onClick={() => setCardsonField([])}> 
+                        <Heading size="md" onClick={() => setCardsonField([])}>
                           流す
                         </Heading>
                       </MenuItem>
@@ -243,12 +244,13 @@ export default function PlayField() {
               </Menu>
             </Stack>
             <Stack>
-              <Flex justifyContent="center" marginBottom="5rem">
-                {isEmpty(stackCardsList) && isEmpty(cardsInHand) ? (
-                  // <Heading>あがり🎉</Heading>
+              {isEmpty(stackCardsList) && isEmpty(cardsInHand) ? (
+                // <Heading>あがり🎉</Heading>
+                <Flex justifyContent="center" marginBottom="5rem">
                   <Heading>反則あがり😭</Heading>
-                ) : null}
-              </Flex>
+                </Flex>
+              ) : null}
+
               <Flex>
                 {cardsonField.map((card, index) => (
                   <Card
@@ -273,7 +275,6 @@ export default function PlayField() {
                 onClick={selectedCards.length !== 0 ? () => addToField() : null}
                 marginBottom="2rem"
                 variant="outline"
-              
               >
                 札を場に展開
               </Button>
@@ -283,15 +284,18 @@ export default function PlayField() {
                   size="lg"
                   variant="outline"
                   onClick={() => setSelectedCards([])}
-                
                 >
                   選択をリセット
                 </Button>
               )}
-              <Button size="lg" variant="outline" onClick={() => {
-                setOverlayID("setOppoCards")
-                onOpen()
-              }}>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => {
+                  setOverlayID('setOppoCards');
+                  onOpen();
+                }}
+              >
                 場の札を設定
               </Button>
               <Overlay
