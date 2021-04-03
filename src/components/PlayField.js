@@ -17,6 +17,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useColorMode,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import '../Card/Card.css';
@@ -31,6 +32,7 @@ export const CardContex = createContext({
 export default function PlayField() {
   // Initialize cards for deck, field, and hand
   useEffect(() => {
+    toggleColorMode()
     let counter = 0;
     const copy_allCard = [...allCards];
     var stackCardsAll = [];
@@ -61,6 +63,7 @@ export default function PlayField() {
   const [movedCards, setMovedCards] = useState([]); //cards which have been moved
   const [overlayID, setOverlayID] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   // ↓ chunck a myArray into chunk_size
   function chunkArray(myArray, chunk_size) {
