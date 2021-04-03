@@ -1,24 +1,26 @@
-import logo from './logo.svg';
+import PlayField from './components/PlayField';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import './App.css';
 
 function App() {
+  const cardColor = extendTheme({
+    colors: {
+      red: '#ff006e',
+      blue: '#1982c4',
+      green: '#6a994e',
+      yellow: '#fbff12',
+      white: '#ebebeb',
+    },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider theme={cardColor}>
+      <DndProvider backend={HTML5Backend}>
+        <PlayField />
+      </DndProvider>
+    </ChakraProvider>
   );
 }
 

@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap");
+
+.card-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 3rem;
+  overflow-x: visible;
+}
+
+.card-list::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.card-list::-webkit-scrollbar-thumb {
+  background: #201c29;
+  border-radius: 10px;
+  box-shadow: inset 2px 2px 2px hsla(0, 0%, 100%, 0.25),
+    inset -2px -2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.card-list::-webkit-scrollbar-track {
+  background: linear-gradient(90deg, #201c29, #201c29 1px, #17141d 0, #17141d);
+}
+
+.card {
+  height: 300px;
+  width: 200px;
+  padding: 1rem;
+  border-radius: 16px;
+  background: #17141d;
+  box-shadow: -1rem 0 3rem #000;
+  display: flex;
+  flex-direction: column;
+  transition: 0.2s;
+  margin: 0;
+  scroll-snap-align: start;
+  clear: both;
+  position: relative;
+  cursor: pointer;
+}
+
+.card:focus-within ~ .card,
+.card:hover ~ .card {
+  transform: translateX(130px);
+}
+
+.card:hover {
+  transform: translateY(-1rem);
+}
+
+.card_in_hand:not(:first-child) {
+  margin-left: -100px;
+}
+
+.cardStack {
+  height: 300px;
+  width: 200px;
+  padding: 1rem;
+  border-radius: 16px;
+  background: #17141d;
+  box-shadow: 0 0 1rem #000;
+  display: flex;
+  flex-direction: column;
+  transition: 0.2s;
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  scroll-snap-align: start;
+  clear: both;
+  position: relative;
+  cursor: pointer;
+}
+
+.cardStack:focus-within ~ .cardStack,
+.cardStack:hover ~ .cardStack {
+  transform: translateX(50px);
+}
+
+.cardStack:hover {
+  transform: translateY(2rem);
+}
+
+.card_in_Stack:not(:first-child) {
+  margin-left: -220px;
+}
+.same_card:last-child {
+  transform: translate(2.5rem, 2rem);
+}
+
+.card_in_hand:not(:first-child) {
+  margin-left: -100px;
+}
+
+.glow {
+  border: 2px solid #fdfdff;
+}
+
+.hand_selected {
+  transform: translateY(-3rem);
+}

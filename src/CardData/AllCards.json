@@ -1,0 +1,367 @@
+[
+  {
+    "_id": "1_red",
+    "title": 1,
+    "number": 1,
+    "color": "red"
+  },
+  {
+    "_id": "2_red",
+    "title": 2,
+    "number": 2,
+    "color": "red"
+  },
+  {
+    "_id": "3_red",
+    "title": 3,
+    "number": 3,
+    "color": "red"
+  },
+  {
+    "_id": "4_red",
+    "title": 4,
+    "number": 4,
+    "color": "red"
+  },
+  {
+    "_id": "5_red",
+    "title": 5,
+    "number": 5,
+    "color": "red"
+  },
+  {
+    "_id": "6_red",
+    "title": "6 ☠",
+    "number": 6,
+    "color": "red"
+  },
+  {
+    "_id": "7_red",
+    "title": "7 👼",
+    "number": 7,
+    "color": "red"
+  },
+  {
+    "_id": "8_red",
+    "title": 8,
+    "number": 8,
+    "color": "red"
+  },
+  {
+    "_id": "9_red",
+    "title": 9,
+    "number": 9,
+    "color": "red"
+  },
+  {
+    "_id": "10_red",
+    "title": 10,
+    "number": 10,
+    "color": "red"
+  },
+  {
+    "_id": "11_red",
+    "title": 11,
+    "number": 11,
+    "color": "red"
+  },
+  {
+    "_id": "12_red",
+    "title": 12,
+    "number": 12,
+    "color": "red"
+  },
+  {
+    "_id": "13_red",
+    "title": 13,
+    "number": 13,
+    "color": "red"
+  },
+
+  {
+    "_id": "1_blue",
+    "title": 1,
+    "number": 1,
+    "color": "blue"
+  },
+  {
+    "_id": "2_blue",
+    "title": 2,
+    "number": 2,
+    "color": "blue"
+  },
+  {
+    "_id": "3_blue",
+    "title": 3,
+    "number": 3,
+    "color": "blue"
+  },
+  {
+    "_id": "4_blue",
+    "title": 4,
+    "number": 4,
+    "color": "blue"
+  },
+  {
+    "_id": "5_blue",
+    "title": 5,
+    "number": 5,
+    "color": "blue"
+  },
+  {
+    "_id": "6_blue",
+    "title": "6 ☠",
+    "number": 6,
+    "color": "blue"
+  },
+  {
+    "_id": "7_blue",
+    "title": "7 👼",
+    "number": 7,
+    "color": "blue"
+  },
+  {
+    "_id": "8_blue",
+    "title": 8,
+    "number": 8,
+    "color": "blue"
+  },
+  {
+    "_id": "9_blue",
+    "title": 9,
+    "number": 9,
+    "color": "blue"
+  },
+  {
+    "_id": "10_blue",
+    "title": 10,
+    "number": 10,
+    "color": "blue"
+  },
+  {
+    "_id": "11_blue",
+    "title": 11,
+    "number": 11,
+    "color": "blue"
+  },
+  {
+    "_id": "12_blue",
+    "title": 12,
+    "number": 12,
+    "color": "blue"
+  },
+  {
+    "_id": "13_blue",
+    "title": 13,
+    "number": 13,
+    "color": "blue"
+  },
+
+  {
+    "_id": "1_yellow",
+    "title": 1,
+    "number": 1,
+    "color": "yellow"
+  },
+  {
+    "_id": "2_yellow",
+    "title": 2,
+    "number": 2,
+    "color": "yellow"
+  },
+  {
+    "_id": "3_yellow",
+    "title": 3,
+    "number": 3,
+    "color": "yellow"
+  },
+  {
+    "_id": "4_yellow",
+    "title": 4,
+    "number": 4,
+    "color": "yellow"
+  },
+  {
+    "_id": "5_yellow",
+    "title": 5,
+    "number": 5,
+    "color": "yellow"
+  },
+  {
+    "_id": "6_yellow",
+    "title": "6 ☠",
+    "number": 6,
+    "color": "yellow"
+  },
+  {
+    "_id": "7_yellow",
+    "title": "7 👼",
+    "number": 7,
+    "color": "yellow"
+  },
+  {
+    "_id": "8_yellow",
+    "title": 8,
+    "number": 8,
+    "color": "yellow"
+  },
+  {
+    "_id": "9_yellow",
+    "title": 9,
+    "number": 9,
+    "color": "yellow"
+  },
+  {
+    "_id": "10_yellow",
+    "title": 10,
+    "number": 10,
+    "color": "yellow"
+  },
+  {
+    "_id": "11_yellow",
+    "title": 11,
+    "number": 11,
+    "color": "yellow"
+  },
+  {
+    "_id": "12_yellow",
+    "title": 12,
+    "number": 12,
+    "color": "yellow"
+  },
+  {
+    "_id": "13_yellow",
+    "title": 13,
+    "number": 13,
+    "color": "yellow"
+  }, 
+
+  {
+    "_id": "1_green",
+    "title": 1,
+    "number": 1,
+    "color": "green"
+  },
+  {
+    "_id": "2_green",
+    "title": 2,
+    "number": 2,
+    "color": "green"
+  },
+  {
+    "_id": "3_green",
+    "title": 3,
+    "number": 3,
+    "color": "green"
+  },
+  {
+    "_id": "4_green",
+    "title": 4,
+    "number": 4,
+    "color": "green"
+  },
+  {
+    "_id": "5_green",
+    "title": 5,
+    "number": 5,
+    "color": "green"
+  },
+  {
+    "_id": "6_green",
+    "title": "6 ☠",
+    "number": 6,
+    "color": "green"
+  },
+  {
+    "_id": "7_green",
+    "title": "7 👼",
+    "number": 7,
+    "color": "green"
+  },
+  {
+    "_id": "8_green",
+    "title": 8,
+    "number": 8,
+    "color": "green"
+  },
+  {
+    "_id": "9_green",
+    "title": 9,
+    "number": 9,
+    "color": "green"
+  },
+  {
+    "_id": "10_green",
+    "title": 10,
+    "number": 10,
+    "color": "green"
+  },
+  {
+    "_id": "11_green",
+    "title": 11,
+    "number": 11,
+    "color": "green"
+  },
+  {
+    "_id": "12_green",
+    "title": 12,
+    "number": 12,
+    "color": "green"
+  },
+  {
+    "_id": "13_green",
+    "title": 13,
+    "number": 13,
+    "color": "green"
+  },
+
+  {
+    "_id": "trinity_yellow",
+    "title": "🦉Ego",
+    "number": 333,
+    "color": "yellow"
+  },
+  {
+    "_id": "trinity_green",
+    "title": "🦉Empty",
+    "number": 333,
+    "color": "green"
+  },
+  {
+    "_id": "trinity_blue",
+    "title": "🦉Love",
+    "number": 333,
+    "color": "blue"
+  },
+  {
+    "_id": "trinity_red",
+    "title": "🦉Trinity",
+    "number": 333,
+    "color": "red"
+  },
+
+  {
+    "_id": "eyes_yellow",
+    "title": "Eyes👁",
+    "number": 666,
+    "color": "yellow"
+  },
+  {
+    "_id": "eyes_yellow",
+    "title": "Eyes👁",
+    "number": 666,
+    "color": "yellow"
+  },
+  {
+    "_id": "humalian_white",
+    "title": "Humalinan",
+    "number": 999,
+    "color": "white"
+  },
+  {
+    "_id": "humalian_white",
+    "title": "Humalinan",
+    "number": 999,
+    "color": "white"
+  }
+]
