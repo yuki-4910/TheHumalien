@@ -60,9 +60,16 @@ export default function PlayField() {
   const [selectedCards, setSelectedCards] = useState([]); // selected cards before putting to field
   const [cardsonField, setCardsonField] = useState([]); // current cards on field
   const [movedCards, setMovedCards] = useState([]); //cards which have been moved
+  // const [flippedCards, setFlippedCards] = useState([]);
   const [overlayID, setOverlayID] = useState('');
+
+  // ↓ useHooks from chakra UI
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+
+  if (colorMode === 'light') {
+    toggleColorMode();
+  }
 
   // ↓ chunck a myArray into chunk_size
   function chunkArray(myArray, chunk_size) {
@@ -96,8 +103,6 @@ export default function PlayField() {
 
   // ↓ add selectedCards into cardsonField
   const addToField = () => {
-    var fieldCard_copy = [...cardsonField];
-    fieldCard_copy.concat(selectedCards);
     setCardsonField(selectedCards);
     setSelectedCards([]);
 
@@ -111,6 +116,7 @@ export default function PlayField() {
     }
   };
 
+  //↓ check whether top and second_top cards are identical
   const isEqual = (top, second_top) => {
     // 🦉 => 333
     // 👁 => 666
@@ -125,17 +131,30 @@ export default function PlayField() {
   function shouldBeTop(arr, index, stacks, card) {
     if (index === stacks.length - 1) {
       return true;
-    } else if (movedCards.includes(arr[stacks.length - 1]) && index === stacks.length - 2) {
+    } else if (
+      movedCards.includes(arr[stacks.length - 1]) &&
+      index === stacks.length - 2 &&
+      arr[stacks.length - 1].number === arr[stacks.length - 2].number
+    ) {
       return true;
-    } else if (movedCards.includes(arr[stacks.length - 2]) && index === stacks.length - 3) {
+    } else if (
+      movedCards.includes(arr[stacks.length - 2]) &&
+      index === stacks.length - 3 &&
+      arr[stacks.length - 2].number === arr[stacks.length - 3].number
+    ) {
       return true;
-    } else if (movedCards.includes(arr[stacks.length - 3]) && index === stacks.length - 4) {
+    } else if (
+      movedCards.includes(arr[stacks.length - 3]) &&
+      index === stacks.length - 4 &&
+      arr[stacks.length - 3].number === arr[stacks.length - 4].number
+    ) {
       return true;
     } else {
       return false;
     }
   }
 
+  // ↓ check whether givin list is empty or not
   const isEmpty = (list) => {
     var isEmpty = true;
     for (var a_list in list) {
@@ -146,11 +165,44 @@ export default function PlayField() {
     return isEmpty;
   };
 
+  const addSelected = (input_card) => {
+    var copy_selected = [...selectedCards];
+    if (copy_selected.includes(input_card)) {
+      copy_selected = copy_selected.filter((card, id) => card !== input_card);
+    } else {
+      copy_selected.push(input_card);
+    }
+    setSelectedCards(copy_selected);
+  };
+
+  const getHints = () => {
+    const temp_hand = [...cardsInHand];
+    const temp_deck = [...stackCardsList];
+    const temp_moved = [...movedCards];
+    var flippedCards_all = [];
+    for (var deck_idx in temp_deck) {
+      var each_deck = temp_deck[deck_idx];
+      for (var idx in each_deck) {
+        if (temp_moved.includes(each_deck[idx]) && idx !== 0) {
+          flippedCards_all.push(each_deck[idx]);
+          if (
+            !temp_moved.includes(each_deck[idx - 1]) &&
+            each_deck[idx].number === each_deck[idx - 1].number
+          ) {
+            flippedCards_all.push(each_deck[idx - 1]);
+          }
+        } else if (parseInt(idx) === parseInt(each_deck.length - 1)) {
+          flippedCards_all.push(each_deck[idx]);
+        }
+      }
+    }
+    flippedCards_all = flippedCards_all.concat(temp_hand);
+
+    console.log(flippedCards_all);
+  };
+
   // console log area
   //
-  if (colorMode === 'light') {
-    toggleColorMode()
-  }
 
   return (
     <CardContex.Provider value={{ addToOtherDeck, addToField }}>
@@ -173,7 +225,7 @@ export default function PlayField() {
                       clicked={() => {
                         const selectable = shouldBeTop(a_pile, index, stacks, card);
                         if (selectable) {
-                          setSelectedCards([...selectedCards, card]);
+                          addSelected(card);
                         }
                       }}
                       moved={movedCards.includes(card)}
@@ -220,28 +272,32 @@ export default function PlayField() {
                       as={Button}
                       rightIcon={<ChevronDownIcon />}
                       size="lg"
+                      variant="outline"
+                      colorScheme="telegram"
                     >
                       <Heading size="sm">{isOpen ? '閉じる' : 'オプション一覧'}</Heading>
                     </MenuButton>
                     <MenuList>
-                      <MenuItem>
-                        <Heading
-                          size="md"
-                          onClick={() => {
-                            setOverlayID('hintOverlay');
-                            onOpen();
-                          }}
-                        >
-                          😎 ヒント
-                        </Heading>
+                      <MenuItem
+                        onClick={() => {
+                          setOverlayID('hintOverlay');
+                          getHints();
+                          onOpen();
+                        }}
+                      >
+                        <Heading size="md">😎 ヒント</Heading>
                       </MenuItem>
                       <MenuItem>
                         <Heading size="md">相手がパス</Heading>
                       </MenuItem>
-                      <MenuItem>
-                        <Heading size="md" onClick={() => setCardsonField([])}>
-                          流す
-                        </Heading>
+                      <MenuItem
+                        onClick={() => {
+                          setTimeout(() => {
+                            setCardsonField([]);
+                          }, 500);
+                        }}
+                      >
+                        <Heading size="md">流す</Heading>
                       </MenuItem>
                       {/* <MenuItem onClick={() => alert('Kagebunshin')}>Create a Copy</MenuItem> */}
                     </MenuList>
@@ -281,22 +337,15 @@ export default function PlayField() {
                 onClick={selectedCards.length !== 0 ? () => addToField() : null}
                 marginBottom="2rem"
                 variant="outline"
+                colorScheme="teal"
               >
                 札を場に展開
               </Button>
-              {selectedCards.length === 0 ? null : (
-                <Button
-                  marginBottom="2rem"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setSelectedCards([])}
-                >
-                  選択をリセット
-                </Button>
-              )}
+
               <Button
                 size="lg"
                 variant="outline"
+                colorScheme="purple"
                 onClick={() => {
                   setOverlayID('setOppoCards');
                   onOpen();
@@ -326,7 +375,7 @@ export default function PlayField() {
                 selected={selectedCards.includes(card)}
                 cardsinHand={true}
                 top={true}
-                clicked={() => setSelectedCards([...selectedCards, card])}
+                clicked={() => addSelected(card)}
               />
             ))}
           </section>
