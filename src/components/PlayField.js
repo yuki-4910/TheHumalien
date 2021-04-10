@@ -23,6 +23,7 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import '../Card/Card.css';
 import allCards from '../CardData/AllCards.json';
 import Overlay from './Overlay';
+import { singleCombination, doubleCombination } from './HintCombinations';
 
 export const CardContex = createContext({
   addToOtherDeck: null,
@@ -60,8 +61,10 @@ export default function PlayField() {
   const [selectedCards, setSelectedCards] = useState([]); // selected cards before putting to field
   const [cardsonField, setCardsonField] = useState([]); // current cards on field
   const [movedCards, setMovedCards] = useState([]); //cards which have been moved
-  // const [flippedCards, setFlippedCards] = useState([]);
+  const [revolution, setRevolution] = useState(false); // false ? 13 is stronger : 1 is stronger
+  const [prev_card, setPrev_card] = useState([]); // previous cards before the revolution
   const [overlayID, setOverlayID] = useState('');
+  const [hintsList, setHintsList] = useState({}); //
 
   // ↓ useHooks from chakra UI
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -102,8 +105,13 @@ export default function PlayField() {
   };
 
   // ↓ add selectedCards into cardsonField
-  const addToField = () => {
-    setCardsonField(selectedCards);
+  const addToField = (selectedList) => {
+    var checkRevolution = selectedList.filter((card) => card.number === 333);
+    if (checkRevolution.length >= 1 && checkRevolution.length <= 4) {
+      setRevolution(!revolution);
+    }
+    setPrev_card(cardsonField);
+    setCardsonField(selectedList);
     setSelectedCards([]);
 
     var new_cardsinHand = cardsInHand.filter((card) => !selectedCards.includes(card));
@@ -165,6 +173,18 @@ export default function PlayField() {
     return isEmpty;
   };
 
+  // ↓ check number of empty deck in stackCards
+  const checkEmptyDeck = (list) => {
+    var emptyCounter = 0;
+    for (var a_list in list) {
+      if (list[a_list].length === 0) {
+        emptyCounter += 1;
+      }
+    }
+    return emptyCounter;
+  };
+
+  // ↓ add to selectedCards list
   const addSelected = (input_card) => {
     var copy_selected = [...selectedCards];
     if (copy_selected.includes(input_card)) {
@@ -175,14 +195,16 @@ export default function PlayField() {
     setSelectedCards(copy_selected);
   };
 
+  // ↓ get all the displaying cards
   const getHints = () => {
+    // push all displaying cards to flippedCards
     const temp_hand = [...cardsInHand];
     const temp_deck = [...stackCardsList];
     const temp_moved = [...movedCards];
     var flippedCards_all = [];
     for (var deck_idx in temp_deck) {
       var each_deck = temp_deck[deck_idx];
-      for (var idx in each_deck) {
+      for (let idx in each_deck) {
         if (temp_moved.includes(each_deck[idx]) && idx !== 0) {
           flippedCards_all.push(each_deck[idx]);
           if (
@@ -197,19 +219,177 @@ export default function PlayField() {
       }
     }
     flippedCards_all = flippedCards_all.concat(temp_hand);
+    flippedCards_all.sort(function (a, b) {
+      return a.number - b.number;
+    });
 
-    console.log(flippedCards_all);
+    var hints = {
+      single: 0,
+      specialCards: [],
+      double: [],
+      triple: [],
+      specialCombination: [],
+    };
+    // if 革命 is first card on field ? only Humalien is available
+    var checkRevolution = cardsonField.filter((card) => card.number === 333);
+    if (prev_card.length === 0 && checkRevolution.length > 0 && checkRevolution.length < 4) {
+      hints.specialCards.push({
+        title: 'Humalien',
+        color: 'white',
+      });
+      setHintsList(hints);
+      return;
+    }
+
+    // Find all numbers in flipped catds
+    var allNums = [];
+    for (let index in flippedCards_all) {
+      allNums.push(flippedCards_all[index].number);
+    }
+    allNums = allNums.filter((card, index) => allNums.indexOf(card) === index);
+
+    // chunk same number cards
+    var chunkSames = [];
+    for (let idx in allNums) {
+      chunkSames.push(flippedCards_all.filter((card, index) => card.number === allNums[idx]));
+    }
+
+    // case when cards on field is 1
+    // if (cardsonField.length === 1) {
+    //   if (
+    //     cardsonField[0].number <= 13 &&
+    //     cardsonField[0].number >= 1 &&
+    //     cardsonField[0].number !== 7
+    //   ) {
+    //     if (!revolution && flippedCards_all.some((card) => card.number >= cardsonField[0].number)) {
+    //       // 13 is strongest
+    //       hints.single = cardsonField[0].number;
+    //     } else if (
+    //       revolution &&
+    //       (flippedCards_all.some((card) => card.number <= cardsonField[0].number) ||
+    //         flippedCards_all.some((card) => card.number === 999))
+    //     ) {
+    //       // 1 is strongest
+    //       hints.single = cardsonField[0].number;
+    //     }
+    //   } else if (
+    //     (cardsonField[0].number === 999 && flippedCards_all.some((card) => card.number === 999)) ||
+    //     (cardsonField[0].number === 333 && flippedCards_all.some((card) => card.number === 999))
+    //   ) {
+    //     hints.specialCards.push({
+    //       title: 'Humalien',
+    //       color: 'white',
+    //     });
+    //   } else if (
+    //     cardsonField[0].number === 7 &&
+    //     flippedCards_all.some((card) => card.number === 666)
+    //   ) {
+    //     hints.specialCards.push({
+    //       title: 'Eyes of Providence',
+    //       color: 'yellow',
+    //     });
+    //   } else if (cardsonField[0].number === 333) {
+    //     if (!revolution && flippedCards_all.some((card) => card.number >= prev_card[0].number)) {
+    //       // 13 is strongest
+    //       hints.single = prev_card[0].number;
+    //     } else if (
+    //       revolution &&
+    //       (flippedCards_all.some((card) => card.number <= prev_card[0].number) ||
+    //         flippedCards_all.some((card) => card.number === 999))
+    //     ) {
+    //       // 1 is strongest
+    //       hints.single = prev_card[0].number;
+    //     }
+    //   }
+    //   for (let idx in chunkSames) {
+    //     if (
+    //       (cardsonField[0].number !== 333 &&
+    //         !revolution &&
+    //         chunkSames[idx].length >= 2 &&
+    //         chunkSames[idx][0].number >= cardsonField[0].number &&
+    //         cardsonField[0].number !== 7) ||
+    //       (cardsonField[0].number === 333 &&
+    //         !revolution &&
+    //         chunkSames[idx].length >= 2 &&
+    //         chunkSames[idx][0].number >= prev_card[0].number &&
+    //         cardsonField[0].number !== 7)
+    //     ) {
+    //       if (chunkSames[idx][0].number === 333 && cardsonField[0].number !== 333) {
+    //         hints.double.push({
+    //           title: '🦉のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number === 666) {
+    //         hints.double.push({
+    //           title: 'Eyes of Providence のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number === 999) {
+    //         hints.double.push({
+    //           title: 'Humalien のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number !== 333) {
+    //         hints.double.push({
+    //           title: chunkSames[idx][0].number + ' のダブル',
+    //         });
+    //       }
+    //     } else if (
+    //       (cardsonField[0].number !== 333 &&
+    //         revolution &&
+    //         chunkSames[idx].length >= 2 &&
+    //         chunkSames[idx][0].number <= cardsonField[0].number &&
+    //         cardsonField[0].number !== 7) ||
+    //       (cardsonField[0].number === 333 &&
+    //         revolution &&
+    //         chunkSames[idx].length >= 2 &&
+    //         chunkSames[idx][0].number <= prev_card[0].number &&
+    //         cardsonField[0].number !== 7)
+    //     ) {
+    //       if (chunkSames[idx][0].number === 333 && cardsonField[0].number !== 333) {
+    //         hints.double.push({
+    //           title: '🦉のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number === 666) {
+    //         hints.double.push({
+    //           title: 'Eyes of Providence のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number === 999) {
+    //         hints.double.push({
+    //           title: 'Humalien のダブル',
+    //         });
+    //       } else if (chunkSames[idx][0].number !== 333) {
+    //         hints.double.push({
+    //           title: chunkSames[idx][0].number + ' のダブル',
+    //         });
+    //       }
+    //     }
+    //   }
+    // } else if (cardsonField.length === 2) {
+    // }
+    if (cardsonField.length <= 2) {
+      hints = doubleCombination(
+        revolution,
+        hints,
+        cardsonField,
+        prev_card,
+        flippedCards_all,
+        chunkSames,
+      );
+      if (cardsonField.length <= 1) {
+        hints = singleCombination(revolution, hints, cardsonField, prev_card, flippedCards_all);
+      }
+    }
+    setHintsList(hints);
   };
 
   // console log area
+  console.log(hintsList);
   //
 
   return (
     <CardContex.Provider value={{ addToOtherDeck, addToField }}>
-      {/* <Box height="full" background="#100e14"> */}
       <Box height="full">
         <Stack h="100vh">
-          <Flex justifyContent="center" mt={5} mb={5}>
+          {/* --------------- Stack of cards in top ------------------------------*/}
+          <Flex justifyContent="center" justify="center" mt={5} mb={5}>
             {stackCardsList.map((stacks, p_index) => (
               <BoxDeck key={p_index} to_index={p_index}>
                 <Flex key={p_index}>
@@ -237,6 +417,7 @@ export default function PlayField() {
               </BoxDeck>
             ))}
           </Flex>
+          {/* --------------------------------------------------------------------*/}
 
           <Flex
             justifyContent="space-between"
@@ -257,6 +438,7 @@ export default function PlayField() {
                 max={399}
                 focusBorderColor="#24E500"
                 marginBottom="3rem"
+                focusInputOnChange={false}
               >
                 <NumberInputField />
                 <NumberInputStepper>
@@ -273,24 +455,23 @@ export default function PlayField() {
                       rightIcon={<ChevronDownIcon />}
                       size="lg"
                       variant="outline"
-                      colorScheme="telegram"
+                      colorScheme="messenger"
                     >
                       <Heading size="sm">{isOpen ? '閉じる' : 'オプション一覧'}</Heading>
                     </MenuButton>
                     <MenuList>
                       <MenuItem
+                        ml={'1rem'}
                         onClick={() => {
                           setOverlayID('hintOverlay');
                           getHints();
                           onOpen();
                         }}
                       >
-                        <Heading size="md">😎 ヒント</Heading>
-                      </MenuItem>
-                      <MenuItem>
-                        <Heading size="md">相手がパス</Heading>
+                        <Heading size="md">ヒント 😎</Heading>
                       </MenuItem>
                       <MenuItem
+                        ml={'1rem'}
                         onClick={() => {
                           setTimeout(() => {
                             setCardsonField([]);
@@ -299,7 +480,9 @@ export default function PlayField() {
                       >
                         <Heading size="md">流す</Heading>
                       </MenuItem>
-                      {/* <MenuItem onClick={() => alert('Kagebunshin')}>Create a Copy</MenuItem> */}
+                      <MenuItem ml={'1rem'} onClick={() => setRevolution(!revolution)}>
+                        <Heading size="md">革命 {revolution ? ' 1強' : ' 13強'}</Heading>
+                      </MenuItem>
                     </MenuList>
                   </>
                 )}
@@ -312,7 +495,7 @@ export default function PlayField() {
                   <Heading>反則あがり😭</Heading>
                 </Flex>
               ) : null}
-
+              {/* --------------- cards on field in middle ------------------------------*/}
               <Flex>
                 {cardsonField.map((card, index) => (
                   <Card
@@ -328,24 +511,28 @@ export default function PlayField() {
                   />
                 ))}
               </Flex>
+              {/* -----------------------------------------------------------------------*/}
             </Stack>
 
             <Stack marginRight="7rem">
-              <Button
-                size="lg"
-                width="100%"
-                onClick={selectedCards.length !== 0 ? () => addToField() : null}
-                marginBottom="2rem"
-                variant="outline"
-                colorScheme="teal"
-              >
-                札を場に展開
-              </Button>
+              {selectedCards.length !== 0 ? (
+                <Button
+                  size="lg"
+                  width="100%"
+                  onClick={selectedCards.length !== 0 ? () => addToField(selectedCards) : null}
+                  marginBottom="2rem"
+                  variant="outline"
+                  colorScheme="teal"
+                >
+                  札を場に展開
+                </Button>
+              ) : null}
 
               <Button
                 size="lg"
                 variant="outline"
                 colorScheme="purple"
+                marginBottom="2rem"
                 onClick={() => {
                   setOverlayID('setOppoCards');
                   onOpen();
@@ -353,17 +540,35 @@ export default function PlayField() {
               >
                 場の札を設定
               </Button>
+              {checkEmptyDeck(stackCardsList) !== 0 ? (
+                <Button
+                  size="lg"
+                  width="100%"
+                  variant="outline"
+                  colorScheme="facebook"
+                  onClick={() => {
+                    setTimeout(() => {
+                      setCardsonField([]);
+                    }, 500);
+                  }}
+                >
+                  相手がパス
+                </Button>
+              ) : null}
               <Overlay
                 _id={overlayID}
                 isOpen={isOpen}
                 onOpen={onOpen}
                 onClose={onClose}
-                oppoCards={(cardList) => setCardsonField(cardList)}
+                oppoCards={(cardList) => {
+                  addToField(cardList);
+                }}
+                revolution={revolution}
               />
             </Stack>
           </Flex>
         </Stack>
-
+        {/* --------------- cards in hand in bottom ------------------------------*/}
         <Flex mt={2}>
           <section className="card-list">
             {cardsInHand.map((card, index) => (
@@ -380,6 +585,7 @@ export default function PlayField() {
             ))}
           </section>
         </Flex>
+        {/* ----------------------------------------------------------------------*/}
       </Box>
     </CardContex.Provider>
   );

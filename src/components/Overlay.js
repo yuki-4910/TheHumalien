@@ -36,7 +36,7 @@ export default function OpponentCards(props) {
           (card, i) => card.number === cardsIDs[cardID].number,
         );
         selectedCards.push(filteredCards[0]);
-      } else {
+      } else if (cardsIDs[cardID].color !== '' && cardsIDs[cardID].number !== '') {
         let filteredCards = allCards_obj.filter(
           (card, i) =>
             card.color === cardsIDs[cardID].color && card.number === cardsIDs[cardID].number,
@@ -194,7 +194,11 @@ export default function OpponentCards(props) {
                 </>
               ) : (
                 <>
-                  <Heading size="4xl">Feature<br/>Not Available</Heading>
+                  <Heading size="4xl">
+                    Feature
+                    <br />
+                    Not Available
+                  </Heading>
                 </>
               )}
             </form>
