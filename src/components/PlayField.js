@@ -23,7 +23,12 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import '../Card/Card.css';
 import allCards from '../CardData/AllCards.json';
 import Overlay from './Overlay';
-import { singleCombination, doubleCombination } from './HintCombinations';
+import {
+  singleCombination,
+  doubleCombination,
+  TripleCombination,
+  QuadrupleCombination,
+} from './HintCombinations';
 
 export const CardContex = createContext({
   addToOtherDeck: null,
@@ -228,6 +233,7 @@ export default function PlayField() {
       specialCards: [],
       double: [],
       triple: [],
+      quadruple: [],
       specialCombination: [],
     };
     // if 革命 is first card on field ? only Humalien is available
@@ -254,127 +260,41 @@ export default function PlayField() {
       chunkSames.push(flippedCards_all.filter((card, index) => card.number === allNums[idx]));
     }
 
-    // case when cards on field is 1
-    // if (cardsonField.length === 1) {
-    //   if (
-    //     cardsonField[0].number <= 13 &&
-    //     cardsonField[0].number >= 1 &&
-    //     cardsonField[0].number !== 7
-    //   ) {
-    //     if (!revolution && flippedCards_all.some((card) => card.number >= cardsonField[0].number)) {
-    //       // 13 is strongest
-    //       hints.single = cardsonField[0].number;
-    //     } else if (
-    //       revolution &&
-    //       (flippedCards_all.some((card) => card.number <= cardsonField[0].number) ||
-    //         flippedCards_all.some((card) => card.number === 999))
-    //     ) {
-    //       // 1 is strongest
-    //       hints.single = cardsonField[0].number;
-    //     }
-    //   } else if (
-    //     (cardsonField[0].number === 999 && flippedCards_all.some((card) => card.number === 999)) ||
-    //     (cardsonField[0].number === 333 && flippedCards_all.some((card) => card.number === 999))
-    //   ) {
-    //     hints.specialCards.push({
-    //       title: 'Humalien',
-    //       color: 'white',
-    //     });
-    //   } else if (
-    //     cardsonField[0].number === 7 &&
-    //     flippedCards_all.some((card) => card.number === 666)
-    //   ) {
-    //     hints.specialCards.push({
-    //       title: 'Eyes of Providence',
-    //       color: 'yellow',
-    //     });
-    //   } else if (cardsonField[0].number === 333) {
-    //     if (!revolution && flippedCards_all.some((card) => card.number >= prev_card[0].number)) {
-    //       // 13 is strongest
-    //       hints.single = prev_card[0].number;
-    //     } else if (
-    //       revolution &&
-    //       (flippedCards_all.some((card) => card.number <= prev_card[0].number) ||
-    //         flippedCards_all.some((card) => card.number === 999))
-    //     ) {
-    //       // 1 is strongest
-    //       hints.single = prev_card[0].number;
-    //     }
-    //   }
-    //   for (let idx in chunkSames) {
-    //     if (
-    //       (cardsonField[0].number !== 333 &&
-    //         !revolution &&
-    //         chunkSames[idx].length >= 2 &&
-    //         chunkSames[idx][0].number >= cardsonField[0].number &&
-    //         cardsonField[0].number !== 7) ||
-    //       (cardsonField[0].number === 333 &&
-    //         !revolution &&
-    //         chunkSames[idx].length >= 2 &&
-    //         chunkSames[idx][0].number >= prev_card[0].number &&
-    //         cardsonField[0].number !== 7)
-    //     ) {
-    //       if (chunkSames[idx][0].number === 333 && cardsonField[0].number !== 333) {
-    //         hints.double.push({
-    //           title: '🦉のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number === 666) {
-    //         hints.double.push({
-    //           title: 'Eyes of Providence のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number === 999) {
-    //         hints.double.push({
-    //           title: 'Humalien のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number !== 333) {
-    //         hints.double.push({
-    //           title: chunkSames[idx][0].number + ' のダブル',
-    //         });
-    //       }
-    //     } else if (
-    //       (cardsonField[0].number !== 333 &&
-    //         revolution &&
-    //         chunkSames[idx].length >= 2 &&
-    //         chunkSames[idx][0].number <= cardsonField[0].number &&
-    //         cardsonField[0].number !== 7) ||
-    //       (cardsonField[0].number === 333 &&
-    //         revolution &&
-    //         chunkSames[idx].length >= 2 &&
-    //         chunkSames[idx][0].number <= prev_card[0].number &&
-    //         cardsonField[0].number !== 7)
-    //     ) {
-    //       if (chunkSames[idx][0].number === 333 && cardsonField[0].number !== 333) {
-    //         hints.double.push({
-    //           title: '🦉のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number === 666) {
-    //         hints.double.push({
-    //           title: 'Eyes of Providence のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number === 999) {
-    //         hints.double.push({
-    //           title: 'Humalien のダブル',
-    //         });
-    //       } else if (chunkSames[idx][0].number !== 333) {
-    //         hints.double.push({
-    //           title: chunkSames[idx][0].number + ' のダブル',
-    //         });
-    //       }
-    //     }
-    //   }
-    // } else if (cardsonField.length === 2) {
-    // }
-    if (cardsonField.length <= 2) {
-      hints = doubleCombination(
+    if (cardsonField.length <= 4) {
+      hints = QuadrupleCombination(
         revolution,
         hints,
         cardsonField,
         prev_card,
         flippedCards_all,
         chunkSames,
+        allNums,
       );
-      if (cardsonField.length <= 1) {
-        hints = singleCombination(revolution, hints, cardsonField, prev_card, flippedCards_all);
+      if (cardsonField.length <= 3) {
+        hints = TripleCombination(
+          revolution,
+          hints,
+          cardsonField,
+          prev_card,
+          flippedCards_all,
+          chunkSames,
+          allNums,
+        );
+
+        if (cardsonField.length <= 2) {
+          hints = doubleCombination(
+            revolution,
+            hints,
+            cardsonField,
+            prev_card,
+            flippedCards_all,
+            chunkSames,
+          );
+
+          if (cardsonField.length <= 1) {
+            hints = singleCombination(revolution, hints, cardsonField, prev_card, flippedCards_all);
+          }
+        }
       }
     }
     setHintsList(hints);
@@ -426,26 +346,32 @@ export default function PlayField() {
             minHeight={'300px'}
           >
             <Stack marginLeft="4rem" marginTop="-5em">
-              　
-              <Heading size="md" marginLeft="0.5rem" marginBottom="0.5rem">
-                ポイント
-              </Heading>
-              <NumberInput
-                size="lg"
-                maxW={32}
-                defaultValue={0}
-                min={0}
-                max={399}
-                focusBorderColor="#24E500"
+              
+              <Flex
+                alignContent="center"
+                alignItems="center"
+                justifyContent="center"
                 marginBottom="3rem"
-                focusInputOnChange={false}
               >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+                <Heading size="md" marginRight="1rem">
+                  ポイント
+                </Heading>
+                <NumberInput
+                  size="lg"
+                  maxW={32}
+                  defaultValue={0}
+                  min={0}
+                  max={399}
+                  focusBorderColor="#64dfdf"
+                  focusInputOnChange={false}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </Flex>
               <Menu isLazy>
                 {({ isOpen }) => (
                   <>
@@ -525,6 +451,18 @@ export default function PlayField() {
                   colorScheme="teal"
                 >
                   札を場に展開
+                </Button>
+              ) : null}
+              {selectedCards.length !== 0 ? (
+                <Button
+                  size="lg"
+                  width="100%"
+                  onClick={selectedCards.length !== 0 ? () => setSelectedCards([]) : null}
+                  marginBottom="2rem"
+                  variant="outline"
+                  colorScheme="white"
+                >
+                  札をリセット
                 </Button>
               ) : null}
 
