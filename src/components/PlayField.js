@@ -18,6 +18,7 @@ import {
   MenuList,
   MenuItem,
   useColorMode,
+  useToast,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import '../Card/Card.css';
@@ -50,13 +51,15 @@ export default function PlayField() {
   const [revolution, setRevolution] = useState(false); // false ? 13 is stronger : 1 is stronger
   const [prev_card, setPrev_card] = useState([]); // previous cards before the revolution
   const [round, setRound] = useState(1);
-  const [score, setScore] = useState(10);
+  const [score, setScore] = useState(0);
   const [overlayID, setOverlayID] = useState('');
   const [hintsList, setHintsList] = useState({}); //
+  const deckAlphabet = ['A', 'B', 'C', 'D', 'E'];
 
   // ↓ useHooks from chakra UI
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  const toast = useToast();
 
   if (colorMode === 'light') {
     toggleColorMode();
@@ -122,12 +125,6 @@ export default function PlayField() {
     if (checkRevolution.length >= 1 && checkRevolution.length <= 4) {
       setRevolution(!revolution);
     }
-    var hasSkull = selectedList.some((card) => card.number === 6);
-    if(objectsAreSame(selectedList, selectedCards) && hasSkull){
-      var numOfSkull = selectedList.filter((card) => card.number === 6).length;
-      var numOfHumalien = selectedList.filter((card) => card.number === 999).length;
-      setScore(score + (numOfSkull + numOfHumalien)*round)
-    }
     setPrev_card(cardsonField);
     setCardsonField(selectedList);
     setSelectedCards([]);
@@ -141,17 +138,6 @@ export default function PlayField() {
       setStackCardsList(new_cardsonDeck);
     }
   };
-
-  const objectsAreSame = (x, y) => {
-    var objectsAreSame = true;
-    for(var propertyName in x) {
-       if(x[propertyName] !== y[propertyName]) {
-          objectsAreSame = false;
-          break;
-       }
-    }
-    return objectsAreSame;
- }
 
   //↓ check whether top and second_top cards are identical
   const isEqual = (top, second_top) => {
@@ -223,15 +209,15 @@ export default function PlayField() {
   };
 
   // ↓ check number of empty deck in stackCards
-  const checkEmptyDeck = (list) => {
-    var emptyCounter = 0;
-    for (var a_list in list) {
-      if (list[a_list].length === 0) {
-        emptyCounter += 1;
-      }
-    }
-    return emptyCounter;
-  };
+  // const checkEmptyDeck = (list) => {
+  //   var emptyCounter = 0;
+  //   for (var a_list in list) {
+  //     if (list[a_list].length === 0) {
+  //       emptyCounter += 1;
+  //     }
+  //   }
+  //   return emptyCounter;
+  // };
 
   // ↓ add to selectedCards list
   const addSelected = (input_card) => {
@@ -378,6 +364,9 @@ export default function PlayField() {
                     />
                   ))}
                 </Flex>
+                <Heading size="lg" textAlign="center" mt="1rem" color="#d3d3d3">
+                  {deckAlphabet[p_index]}
+                </Heading>
               </BoxDeck>
             ))}
           </Flex>
@@ -485,6 +474,15 @@ export default function PlayField() {
                       <MenuItem ml={'1rem'} onClick={() => setRevolution(!revolution)}>
                         <Heading size="md">革命 🏳‍🌈</Heading>
                       </MenuItem>
+                      <MenuItem
+                        ml={'1rem'}
+                        onClick={() => {
+                          setOverlayID('setOppoCards');
+                          onOpen();
+                        }}
+                      >
+                        <Heading size="md">場の札を設定 🎴</Heading>
+                      </MenuItem>
                     </MenuList>
                   </>
                 )}
@@ -505,14 +503,18 @@ export default function PlayField() {
                       width="100%"
                       variant="outline"
                       colorScheme="teal"
-                      onClick={round !== 3 ? () => {
-                        initialization();
-                        setRound(round + 1);
-                        setCardsonField([]);
-                        setPrev_card([]);
-                      } :  () => window.location.reload()}
+                      onClick={
+                        round !== 3
+                          ? () => {
+                              initialization();
+                              setRound(round + 1);
+                              setCardsonField([]);
+                              setPrev_card([]);
+                            }
+                          : () => window.location.reload()
+                      }
                     >
-                      {round !== 3 ? "次のラウンド" : "もう一度プレイ"} 
+                      {round !== 3 ? '次のラウンド' : 'もう一度プレイ'}
                     </Button>
                   </Stack>
                 ) : (
@@ -528,14 +530,18 @@ export default function PlayField() {
                       width="100%"
                       variant="outline"
                       colorScheme="teal"
-                      onClick={round !== 3 ? () => {
-                        initialization();
-                        setRound(round + 1);
-                        setCardsonField([]);
-                        setPrev_card([]);
-                      } :  () => window.location.reload()}
+                      onClick={
+                        round !== 3
+                          ? () => {
+                              initialization();
+                              setRound(round + 1);
+                              setCardsonField([]);
+                              setPrev_card([]);
+                            }
+                          : () => window.location.reload()
+                      }
                     >
-                      {round !== 3 ? "次のラウンド" : "もう一度プレイ"}
+                      {round !== 3 ? '次のラウンド' : 'もう一度プレイ'}
                     </Button>
                   </Stack>
                 )
@@ -564,7 +570,34 @@ export default function PlayField() {
                 <Button
                   size="lg"
                   width="100%"
-                  onClick={selectedCards.length !== 0 ? () => addToField(selectedCards) : null}
+                  onClick={
+                    selectedCards.length !== 0
+                      ? () => {
+                          addToField(selectedCards);
+                          var hasSkull = selectedCards.some((card) => card.number === 6);
+                          if (hasSkull) {
+                            var numOfSkull = selectedCards.filter((card) => card.number === 6)
+                              .length;
+                            var numOfHumalien = selectedCards.filter((card) => card.number === 999)
+                              .length;
+                            setScore(score + (numOfSkull + numOfHumalien) * round);
+                            toast({
+                              position: 'top-left',
+                              duration: 3000,
+                              isClosable: true,
+                              render: () => (
+                                <Box color="#003049" p={4} bg="#4cc9f0" borderRadius="10px">
+                                  <Heading size="md">
+                                    ドクロ☠の効果で {(numOfSkull + numOfHumalien) * round}
+                                    ポイント追加です❕
+                                  </Heading>
+                                </Box>
+                              ),
+                            });
+                          }
+                        }
+                      : null
+                  }
                   marginBottom="2rem"
                   variant="outline"
                   colorScheme="teal"
@@ -587,31 +620,29 @@ export default function PlayField() {
 
               <Button
                 size="lg"
+                width="100%"
                 variant="outline"
-                colorScheme="purple"
-                marginBottom="2rem"
+                colorScheme="facebook"
                 onClick={() => {
-                  setOverlayID('setOppoCards');
-                  onOpen();
+                  setTimeout(() => {
+                    setCardsonField([]);
+                  }, 500);
+                  toast({
+                    position: 'top-left',
+                    duration: 3000,
+                    isClosable: true,
+                    render: () => (
+                      <Box color="#003049" p={4} bg="#fcbf49" borderRadius="10px">
+                        <Heading size="md">
+                          自分の空いてる山札の数をポイントに追加してください
+                        </Heading>
+                      </Box>
+                    ),
+                  });
                 }}
               >
-                場の札を設定
+                相手がパス
               </Button>
-              {checkEmptyDeck(stackCardsList) !== 0 ? (
-                <Button
-                  size="lg"
-                  width="100%"
-                  variant="outline"
-                  colorScheme="facebook"
-                  onClick={() => {
-                    setTimeout(() => {
-                      setCardsonField([]);
-                    }, 500);
-                  }}
-                >
-                  相手がパス
-                </Button>
-              ) : null}
               <Overlay
                 _id={overlayID}
                 isOpen={isOpen}
