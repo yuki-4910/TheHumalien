@@ -331,7 +331,7 @@ export const TripleCombination = (
     for (let eachNum = 0; eachNum < allNums.length - 2; eachNum++) {
       let difference =
         allNums[eachNum + 2] - allNums[eachNum + 1] + (allNums[eachNum + 1] - allNums[eachNum]);
-      if (difference === 2 && cards_field[0].number !== 7) {
+      if (difference === 2) {
         //one by one by one
         if (revolution) {
           if (numCardsField === 0) {

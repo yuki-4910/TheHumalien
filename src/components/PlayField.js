@@ -38,6 +38,31 @@ export const CardContex = createContext({
 export default function PlayField() {
   // Initialize cards for deck, field, and hand
   useEffect(() => {
+    initialization();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [cardsInHand, setCardsInHand] = useState([]); // Cards in user's hand
+  const [stackCardsList, setStackCardsList] = useState([]); // 4*5 cardsList for users
+  const [selectedCards, setSelectedCards] = useState([]); // selected cards before putting to field
+  const [cardsonField, setCardsonField] = useState([]); // current cards on field
+  const [movedCards, setMovedCards] = useState([]); //cards which have been moved
+  const [revolution, setRevolution] = useState(false); // false ? 13 is stronger : 1 is stronger
+  const [prev_card, setPrev_card] = useState([]); // previous cards before the revolution
+  const [round, setRound] = useState(1);
+  const [score, setScore] = useState(10);
+  const [overlayID, setOverlayID] = useState('');
+  const [hintsList, setHintsList] = useState({}); //
+
+  // ↓ useHooks from chakra UI
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  if (colorMode === 'light') {
+    toggleColorMode();
+  }
+
+  function initialization() {
     let counter = 0;
     const copy_allCard = [...allCards];
     var stackCardsAll = [];
@@ -59,24 +84,6 @@ export default function PlayField() {
     // ↓ set 20 cards to deck
     var stackList = chunkArray(stackCardsAll, 4);
     setStackCardsList(stackList);
-  }, []);
-
-  const [cardsInHand, setCardsInHand] = useState([]); // Cards in user's hand
-  const [stackCardsList, setStackCardsList] = useState([]); // 4*5 cardsList for users
-  const [selectedCards, setSelectedCards] = useState([]); // selected cards before putting to field
-  const [cardsonField, setCardsonField] = useState([]); // current cards on field
-  const [movedCards, setMovedCards] = useState([]); //cards which have been moved
-  const [revolution, setRevolution] = useState(false); // false ? 13 is stronger : 1 is stronger
-  const [prev_card, setPrev_card] = useState([]); // previous cards before the revolution
-  const [overlayID, setOverlayID] = useState('');
-  const [hintsList, setHintsList] = useState({}); //
-
-  // ↓ useHooks from chakra UI
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { colorMode, toggleColorMode } = useColorMode();
-
-  if (colorMode === 'light') {
-    toggleColorMode();
   }
 
   // ↓ chunck a myArray into chunk_size
@@ -115,6 +122,12 @@ export default function PlayField() {
     if (checkRevolution.length >= 1 && checkRevolution.length <= 4) {
       setRevolution(!revolution);
     }
+    var hasSkull = selectedList.some((card) => card.number === 6);
+    if(objectsAreSame(selectedList, selectedCards) && hasSkull){
+      var numOfSkull = selectedList.filter((card) => card.number === 6).length;
+      var numOfHumalien = selectedList.filter((card) => card.number === 999).length;
+      setScore(score + (numOfSkull + numOfHumalien)*round)
+    }
     setPrev_card(cardsonField);
     setCardsonField(selectedList);
     setSelectedCards([]);
@@ -128,6 +141,17 @@ export default function PlayField() {
       setStackCardsList(new_cardsonDeck);
     }
   };
+
+  const objectsAreSame = (x, y) => {
+    var objectsAreSame = true;
+    for(var propertyName in x) {
+       if(x[propertyName] !== y[propertyName]) {
+          objectsAreSame = false;
+          break;
+       }
+    }
+    return objectsAreSame;
+ }
 
   //↓ check whether top and second_top cards are identical
   const isEqual = (top, second_top) => {
@@ -176,6 +200,26 @@ export default function PlayField() {
       }
     }
     return isEmpty;
+  };
+
+  // ↓ check whether player is finishing illegally
+  const isIllegal = () => {
+    let hasHumalien = cardsonField.some((card) => card.number === 999);
+    let hasOwl = cardsonField.some((card) => card.number === 333);
+    let hasEye = cardsonField.some((card) => card.number === 666);
+    if (hasHumalien || hasOwl || hasEye) {
+      return true;
+    } else if (revolution && cardsonField.length === 1) {
+      if (cardsonField[0].number === 1) {
+        return true;
+      }
+    } else if (!revolution && cardsonField.length === 1) {
+      if (cardsonField[0].number === 13) {
+        return true;
+      }
+    } else {
+      return false;
+    }
   };
 
   // ↓ check number of empty deck in stackCards
@@ -346,32 +390,64 @@ export default function PlayField() {
             minHeight={'300px'}
           >
             <Stack marginLeft="4rem" marginTop="-5em">
-              
-              <Flex
-                alignContent="center"
-                alignItems="center"
-                justifyContent="center"
+              <Box
+                background="#1c2335"
+                padding="1rem"
+                borderRadius="10px"
+                border="2px solid #1780a1"
                 marginBottom="3rem"
               >
-                <Heading size="md" marginRight="1rem">
-                  ポイント
-                </Heading>
-                <NumberInput
-                  size="lg"
-                  maxW={32}
-                  defaultValue={0}
-                  min={0}
-                  max={399}
-                  focusBorderColor="#64dfdf"
-                  focusInputOnChange={false}
+                <Flex alignItems="center" marginBottom="1rem">
+                  <Heading size="md" fontFamily="serif" marginRight="1rem">
+                    ラウンド
+                  </Heading>
+                  <Heading size="lg" color="#56cfe1">
+                    {round}
+                  </Heading>
+                </Flex>
+
+                <Flex
+                  alignContent="center"
+                  alignItems="center"
+                  justifyContent="center"
+                  marginBottom="1.5rem
+                "
                 >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </Flex>
+                  <Heading size="md" marginRight="1rem">
+                    ポイント
+                  </Heading>
+                  <NumberInput
+                    size="lg"
+                    maxW={32}
+                    defaultValue={0}
+                    value={score}
+                    min={0}
+                    max={399}
+                    color="#56cfe1"
+                    focusBorderColor="#64dfdf"
+                    focusInputOnChange={false}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper
+                        onClick={score !== 399 ? () => setScore(score + 1) : null}
+                      />
+                      <NumberDecrementStepper
+                        onClick={score !== 0 ? () => setScore(score - 1) : null}
+                      />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </Flex>
+
+                <Flex alignItems="center">
+                  <Heading size="md" fontFamily="serif" marginRight="1rem">
+                    革命
+                  </Heading>
+                  <Heading size="md" color="#56cfe1" marginLeft="2.1rem">
+                    １{revolution ? '強 ⇚ 弱' : '弱 ⇒ 強'}13
+                  </Heading>
+                </Flex>
+              </Box>
               <Menu isLazy>
                 {({ isOpen }) => (
                   <>
@@ -404,10 +480,10 @@ export default function PlayField() {
                           }, 500);
                         }}
                       >
-                        <Heading size="md">流す</Heading>
+                        <Heading size="md">流す 🚽</Heading>
                       </MenuItem>
                       <MenuItem ml={'1rem'} onClick={() => setRevolution(!revolution)}>
-                        <Heading size="md">革命 {revolution ? ' 1強' : ' 13強'}</Heading>
+                        <Heading size="md">革命 🏳‍🌈</Heading>
                       </MenuItem>
                     </MenuList>
                   </>
@@ -416,10 +492,53 @@ export default function PlayField() {
             </Stack>
             <Stack>
               {isEmpty(stackCardsList) && isEmpty(cardsInHand) ? (
-                // <Heading>あがり🎉</Heading>
-                <Flex justifyContent="center" marginBottom="5rem">
-                  <Heading>反則あがり😭</Heading>
-                </Flex>
+                isIllegal() ? (
+                  <Stack
+                    justifyContent="center"
+                    alignContent="center"
+                    alignItems="center"
+                    marginBottom="5rem"
+                  >
+                    <Heading marginBottom="1rem">反則あがり😭</Heading>
+                    <Button
+                      size="lg"
+                      width="100%"
+                      variant="outline"
+                      colorScheme="teal"
+                      onClick={round !== 3 ? () => {
+                        initialization();
+                        setRound(round + 1);
+                        setCardsonField([]);
+                        setPrev_card([]);
+                      } :  () => window.location.reload()}
+                    >
+                      {round !== 3 ? "次のラウンド" : "もう一度プレイ"} 
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Stack
+                    justifyContent="center"
+                    alignContent="center"
+                    alignItems="center"
+                    marginBottom="5rem"
+                  >
+                    <Heading marginBottom="1rem">あがり🎉</Heading>
+                    <Button
+                      size="lg"
+                      width="100%"
+                      variant="outline"
+                      colorScheme="teal"
+                      onClick={round !== 3 ? () => {
+                        initialization();
+                        setRound(round + 1);
+                        setCardsonField([]);
+                        setPrev_card([]);
+                      } :  () => window.location.reload()}
+                    >
+                      {round !== 3 ? "次のラウンド" : "もう一度プレイ"}
+                    </Button>
+                  </Stack>
+                )
               ) : null}
               {/* --------------- cards on field in middle ------------------------------*/}
               <Flex>
