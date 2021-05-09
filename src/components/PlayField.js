@@ -330,6 +330,29 @@ export default function PlayField() {
     setHintsList(hints);
   };
 
+  //↓ get notification for special card
+  const checkEffect = () => {
+    var hasSkull = selectedCards.some((card) => card.number === 6);
+    if (hasSkull) {
+      var numOfSkull = selectedCards.filter((card) => card.number === 6).length;
+      var numOfHumalien = selectedCards.filter((card) => card.number === 999).length;
+      setScore(score + (numOfSkull + numOfHumalien) * round);
+      toast({
+        position: 'top-left',
+        duration: 3000,
+        isClosable: true,
+        render: () => (
+          <Box color="#003049" p={4} bg="#4cc9f0" borderRadius="10px">
+            <Heading size="md">
+              ドクロ☠の効果で {(numOfSkull + numOfHumalien) * round}
+              ポイント追加です❕
+            </Heading>
+          </Box>
+        ),
+      });
+    }
+  };
+
   // console log area
   console.log(hintsList);
   //
@@ -483,6 +506,23 @@ export default function PlayField() {
                       >
                         <Heading size="md">場の札を設定 🎴</Heading>
                       </MenuItem>
+                      <MenuItem
+                        ml={'1rem'}
+                        onClick={
+                          round !== 3
+                            ? () => {
+                                initialization();
+                                setRound(round + 1);
+                                setCardsonField([]);
+                                setPrev_card([]);
+                              }
+                            : () => window.location.reload()
+                        }
+                      >
+                        <Heading size="md">
+                          {round !== 3 ? '次のラウンド👉' : 'もう一度プレイ👉'}
+                        </Heading>
+                      </MenuItem>
                     </MenuList>
                   </>
                 )}
@@ -565,7 +605,7 @@ export default function PlayField() {
               {/* -----------------------------------------------------------------------*/}
             </Stack>
 
-            <Stack marginRight="7rem">
+            <Stack marginRight="7rem" width="10rem">
               {selectedCards.length !== 0 ? (
                 <Button
                   size="lg"
@@ -574,27 +614,7 @@ export default function PlayField() {
                     selectedCards.length !== 0
                       ? () => {
                           addToField(selectedCards);
-                          var hasSkull = selectedCards.some((card) => card.number === 6);
-                          if (hasSkull) {
-                            var numOfSkull = selectedCards.filter((card) => card.number === 6)
-                              .length;
-                            var numOfHumalien = selectedCards.filter((card) => card.number === 999)
-                              .length;
-                            setScore(score + (numOfSkull + numOfHumalien) * round);
-                            toast({
-                              position: 'top-left',
-                              duration: 3000,
-                              isClosable: true,
-                              render: () => (
-                                <Box color="#003049" p={4} bg="#4cc9f0" borderRadius="10px">
-                                  <Heading size="md">
-                                    ドクロ☠の効果で {(numOfSkull + numOfHumalien) * round}
-                                    ポイント追加です❕
-                                  </Heading>
-                                </Box>
-                              ),
-                            });
-                          }
+                          checkEffect();
                         }
                       : null
                   }
@@ -618,7 +638,7 @@ export default function PlayField() {
                 </Button>
               ) : null}
 
-              <Button
+              {/* <Button
                 size="lg"
                 width="100%"
                 variant="outline"
@@ -642,7 +662,7 @@ export default function PlayField() {
                 }}
               >
                 相手がパス
-              </Button>
+              </Button> */}
               <Overlay
                 _id={overlayID}
                 isOpen={isOpen}
